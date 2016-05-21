@@ -55,6 +55,17 @@ namespace microHttpServer
             };
         }
 
+        public static responseObject listMRTxy(requestObject req) //列出所有捷運車站的出入口座標
+        {
+            StringBuilder sb = new StringBuilder();
+            String content = getMRTCoordinates();
+            sb.Append(content);
+            return new responseObject()
+            {
+                Data = Encoding.UTF8.GetBytes(sb.ToString())
+            };
+        }
+
         private static String getMyDirectory() //取得本地路徑
         {
             String dir = System.Environment.CurrentDirectory;
@@ -63,7 +74,7 @@ namespace microHttpServer
 
         private static String getView() //取得景點資料
         {
-            String allView=file_get_contents("http://data.taipei/opendata/datalist/apiAccess?scope=resourceAquire&rid=36847f3f-deff-4183-a5bb-800737591de5");
+            String allView = file_get_contents("http://data.taipei/opendata/datalist/apiAccess?scope=resourceAquire&rid=36847f3f-deff-4183-a5bb-800737591de5");
             return allView;
         }
 
@@ -71,6 +82,13 @@ namespace microHttpServer
         {
             String allMRTArrive = file_get_contents("http://data.taipei/opendata/datalist/apiAccess?scope=resourceAquire&rid=55ec6d6e-dc5c-4268-a725-d04cc262172b");
             return allMRTArrive;
+        }
+
+        private static String getMRTCoordinates() //取得捷運站出入口座標
+        {
+            String path = getMyDirectory() + "\\mrt_xy";
+            String allMRTCoordinates = System.IO.File.ReadAllText(path + "\\mrt_xy.json");
+            return allMRTCoordinates;
         }
 
         private static string file_get_contents(string fileName) //發送get取得網頁內容
@@ -92,5 +110,5 @@ namespace microHttpServer
         }
     }
 
-    
+
 }

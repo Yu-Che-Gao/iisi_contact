@@ -34,6 +34,8 @@ namespace microHttpServer
                     return requestAndResponseFunction.listView(req);
                 else if (req.Url == "/MRT_arrive") //台北捷運到站站名資料
                     return requestAndResponseFunction.listMRTArrive(req);
+                else if (req.Url == "/MRT_xy") //台北捷運各出入口座標
+                    return requestAndResponseFunction.listMRTxy(req);
                 else
                     return new responseObject()
                     {
