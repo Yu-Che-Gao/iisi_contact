@@ -21,6 +21,18 @@ namespace microHttpServer
             };
         }
 
+        public static responseObject listFood(requestObject req)
+        {
+            StringBuilder sb = new StringBuilder();
+            String path = getMyDirectory() + "\\food_json";
+            String content = System.IO.File.ReadAllText(path + "\\food.json");
+            sb.Append(content);
+            return new responseObject()
+            {
+                Data = Encoding.UTF8.GetBytes(sb.ToString())
+            };
+        }
+
         private static String getMyDirectory() //取得本地路徑
         {
             String dir = System.Environment.CurrentDirectory;

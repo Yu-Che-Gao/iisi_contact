@@ -28,6 +28,8 @@ namespace microHttpServer
             {
                 if (req.Url == "/ubike")
                     return requestAndResponseFunction.listUbikeJson(req);
+                else if (req.Url == "/food")
+                    return requestAndResponseFunction.listFood(req);
                 else
                     return new responseObject()
                     {
