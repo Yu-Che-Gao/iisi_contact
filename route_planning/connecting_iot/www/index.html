@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=big5" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+
+    <link rel="stylesheet" type="text/css" href="css/framework7.ios.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/framework7.ios.colors.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/my-app.css" />
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <title>framework7test</title>
+</head>
+<body>
+    <div class="statusbar-overlay"></div>
+    <div class="panel-overlay"></div>
+
+    <div class="views">
+        <div class="view view-main">
+            <div class="navbar">
+                <div class="navbar-inner">
+                    <div class="center sliding">連接IOT裝置集成</div>
+                </div>
+            </div>
+            <div class="pages navbar-through toolbar-through">
+                <div data-page="index" class="page">
+                    <div class="page-content">
+                        <div class="content-block">
+                            <p>歡迎來到IOT的世界</p>
+                            <div class="row">
+                                <div class="col-50">
+                                    <a href="about.html" class="button">About</a>
+                                </div>
+                                <div class="col-50">
+                                    <a href="route_planning.html" class="button">路徑規劃</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="toolbar tabbar tabbar-labels">
+                <div class="toolbar-inner">
+                    <a href="#view-1" class="tab-link active">
+                        <i class="icon tabbar-demo-icon-1"></i>
+                        <span class="tabbar-label">Information</span>
+                    </a>
+                    <a href="#view-2" class="tab-link">
+                        <i class="icon tabbar-demo-icon-2"></i>
+                        <span class="tabbar-label">Inbox</span>
+                    </a>
+                    <a href="#view-3" class="tab-link">
+                        <i class="icon tabbar-demo-icon-3">
+                            <span class="badge bg-red">4</span>
+                        </i><span class="tabbar-label">Upload</span>
+                    </a>
+                    <a href="#view-4" class="tab-link">
+                        <i class="icon tabbar-demo-icon-4"></i>
+                        <span class="tabbar-label">Photos</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-right panel-reveal">
+        <div class="content-block">
+            <p>Right Panel content here</p>
+            <div class="list-block">
+                <ul>
+                    <li>
+                        <a class="close-panel">
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title">
+                                        功能列表
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/platformOverrides.js"></script>
+    <script type="text/javascript" src="js/framework7.min.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9SnJ_hvgfqaaUsnYXrSkCAaw06q1Nj3A"></script>
+</body>
+</html>
