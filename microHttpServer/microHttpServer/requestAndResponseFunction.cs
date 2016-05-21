@@ -66,6 +66,17 @@ namespace microHttpServer
             };
         }
 
+        public static responseObject listBus(requestObject req) //列出所有公車到站時間
+        {
+            StringBuilder sb = new StringBuilder();
+            String content = getBus();
+            sb.Append(content);
+            return new responseObject()
+            {
+                Data = Encoding.UTF8.GetBytes(sb.ToString())
+            };
+        }
+
         private static String getMyDirectory() //取得本地路徑
         {
             String dir = System.Environment.CurrentDirectory;
@@ -89,6 +100,13 @@ namespace microHttpServer
             String path = getMyDirectory() + "\\mrt_xy";
             String allMRTCoordinates = System.IO.File.ReadAllText(path + "\\mrt_xy.json");
             return allMRTCoordinates;
+        }
+
+        private static String getBus() //取得公車到站時間
+        {
+            String path = getMyDirectory() + "\\bus_json";
+            String allBusTime = System.IO.File.ReadAllText(path + "\\bus_time.json");
+            return allBusTime;
         }
 
         private static string file_get_contents(string fileName) //發送get取得網頁內容

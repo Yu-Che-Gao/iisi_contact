@@ -11,14 +11,14 @@ namespace microHttpServer
     public class unzip
     {
         /**
-         * unzip.unzipFileOfGzip(原始檔名, 目標檔名)
+         * unzip.unzipFileOfGzip(原始檔名, 目標檔名, 解壓縮後放的位置)
          * 描述: 將檔案解壓縮到unzip資料夾下
          */
-        public static void unzipFileOfGzip(String rawFileName, String finalFileName)
+        public static void unzipFileOfGzip(String rawFileName, String finalFileName, String dir)
         {
             String raw = downloadFile.getDownloadFileName(rawFileName);
-            String final = getMyDirectory() + "\\ubike_json\\" + finalFileName + ".json";
-            createDir("ubike_json"); //創建資料夾
+            String final = getMyDirectory() + "\\" + dir + "\\" + finalFileName + ".json";
+            createDir(dir); //創建資料夾
             unGZipFile(raw, final); //開始解壓縮
         }
 

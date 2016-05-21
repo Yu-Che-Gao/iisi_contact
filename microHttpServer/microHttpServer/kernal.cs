@@ -16,8 +16,8 @@ namespace microHttpServer
         TcpListener listener;
         public kernal(int port, Func<requestObject, responseObject> reqProc)
         {
-            //IPAddress ipAddr = IPAddress.Parse("192.168.1.100");
-            IPAddress ipAddr = IPAddress.Parse("127.0.0.1");
+            IPAddress ipAddr = IPAddress.Parse("192.168.1.100");
+            //IPAddress ipAddr = IPAddress.Parse("127.0.0.1");
             listener = new TcpListener(ipAddr, port);
             //另建Thread執行
             serverThread = new Thread(() =>
@@ -35,6 +35,7 @@ namespace microHttpServer
                         StreamWriter sw = new StreamWriter(ns);
                         sw.WriteLine("HTTP/1.1 {0}", resp.StatusText);
                         sw.WriteLine("Content-Type: " + resp.ContentType);
+                        sw.WriteLine("Access-Control-Allow-Origin: *");
                         foreach (string k in resp.Headers.Keys)
                             sw.WriteLine("{0}: {1}", k, resp.Headers[k]);
                         sw.WriteLine("Content-Length: {0}", resp.Data.Length);

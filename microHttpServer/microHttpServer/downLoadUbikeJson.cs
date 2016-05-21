@@ -17,7 +17,7 @@ namespace microHttpServer
             while (true)
             {
                 downloadFile.downloadFileFromWeb(url, "ubike"); //下載檔案
-                unzip.unzipFileOfGzip("ubike", "ubike"); //解壓縮檔案
+                unzip.unzipFileOfGzip("ubike", "ubike", "ubike_json"); //解壓縮檔案
                 Thread.Sleep(5000);
             }
         }

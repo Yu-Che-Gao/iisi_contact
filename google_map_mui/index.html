@@ -1,10 +1,9 @@
 <html>
 
 	<head>
-		<title>Simple Map</title>
-		<meta name="viewport" content="initial-scale=1.0">
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
 		<meta charset="utf-8">
-		<link rel="stylesheet" href="css/mui.min.css">
+		<title>Simple markers</title>
 		<style>
 			html,
 			body {
@@ -20,44 +19,35 @@
 	</head>
 
 	<body>
-		<header class="mui-bar mui-bar-nav">
-			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-			<h1 class="mui-title">标题</h1>
-		</header>
 		<div id="map"></div>
-		<nav class="mui-bar mui-bar-tab">
-			<a id="defaultTab" class="mui-tab-item mui-active" href="tab-webview-subpage-about.html">
-				<span class="mui-icon mui-icon-home"></span>
-				<span class="mui-tab-label">首页</span>
-			</a>
-			<a class="mui-tab-item" href="tab-webview-subpage-chat.html">
-				<span class="mui-icon mui-icon-email"><span class="mui-badge">9</span></span>
-				<span class="mui-tab-label">消息</span>
-			</a>
-			<a class="mui-tab-item" href="tab-webview-subpage-contact.html">
-				<span class="mui-icon mui-icon-contact"></span>
-				<span class="mui-tab-label">通讯录</span>
-			</a>
-			<a class="mui-tab-item" href="tab-webview-subpage-setting.html">
-				<span class="mui-icon mui-icon-gear"></span>
-				<span class="mui-tab-label">设置</span>
-			</a>
-		</nav>
-		<script>
-			var map;
 
+		<script>
 			function initMap() {
-				map = new google.maps.Map(document.getElementById('map'), {
-					center: {
-						lat: -34.397,
-						lng: 150.644
-					},
-					zoom: 8
+				var myPosition = getPosition();
+				var map = new google.maps.Map(document.getElementById('map'), {
+					zoom: 8,
+					center: myPosition[0]
 				});
+				myMarker(map, myPosition);
+			}
+
+			function getPosition() { //設定座標
+				let text=[{lat: 24,lng: 120}];
+				text.push({lat: 24.3, lng:120});
+				return text;
+			} 
+
+			function myMarker(map, positionArray) { //mark所有座標
+				for (let i = 0; i < positionArray.length; i++) {
+					var marker = new google.maps.Marker({
+						position: positionArray[i],
+						map: map
+					});
+				}
 			}
 		</script>
-		<script src="js/mui.min.js"></script>
-		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9SnJ_hvgfqaaUsnYXrSkCAaw06q1Nj3A&callback=initMap" async defer></script>
+		<script src="index.js"></script>
+		<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9SnJ_hvgfqaaUsnYXrSkCAaw06q1Nj3A&callback=initMap"></script>
 	</body>
 
 </html>
