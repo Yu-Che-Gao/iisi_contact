@@ -26,10 +26,14 @@ namespace microHttpServer
             kernal myKernal = new kernal(3000,
             (req) =>
             {
-                if (req.Url == "/ubike")
+                if (req.Url == "/ubike") //ubike詳細資料
                     return requestAndResponseFunction.listUbikeJson(req);
-                else if (req.Url == "/food")
+                else if (req.Url == "/food") //食尚玩家資料
                     return requestAndResponseFunction.listFood(req);
+                else if (req.Url == "/view") //景點資料
+                    return requestAndResponseFunction.listView(req);
+                else if (req.Url == "/MRT_arrive") //台北捷運到站站名資料
+                    return requestAndResponseFunction.listMRTArrive(req);
                 else
                     return new responseObject()
                     {
