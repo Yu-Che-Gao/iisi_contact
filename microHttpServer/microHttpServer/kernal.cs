@@ -16,7 +16,8 @@ namespace microHttpServer
         TcpListener listener;
         public kernal(int port, Func<requestObject, responseObject> reqProc)
         {
-            IPAddress ipAddr = IPAddress.Parse("192.168.1.100");
+            //IPAddress ipAddr = IPAddress.Parse("192.168.1.100");
+            IPAddress ipAddr = IPAddress.Parse("127.0.0.1");
             listener = new TcpListener(ipAddr, port);
             //另建Thread執行
             serverThread = new Thread(() =>
