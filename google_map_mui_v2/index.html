@@ -1,0 +1,170 @@
+<html>
+
+	<head>
+		<title>Simple Map</title>
+		<meta name="viewport" content="initial-scale=1.0">
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="css/mui.min.css">
+		<style>
+			html,
+			body {
+				height: 100%;
+				margin: 0;
+				padding: 0;
+			}
+			
+			#map {
+				height: 100%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">首頁</h1>
+			<a class="mui-btn mui-btn-blue mui-btn-link mui-pull-right" href="send.html">回饋</a>
+
+		</header>
+		<div class="mui-content">
+			<div id="map"></div>
+			<nav class="mui-bar mui-bar-tab">
+				<a id="defaultTab" class="mui-tab-item mui-active" href="tab-webview-subpage-about.html">
+					<span class="mui-icon mui-icon-location"></span>
+					<span class="mui-tab-label">首頁</span>
+				</a>
+				<!--<a class="mui-tab-item" href="tab-webview-subpage-chat.html">
+				<span class="mui-icon mui-icon-email"></span>
+				<span class="mui-tab-label">uBike</span>
+			</a>-->
+				<a class="mui-tab-item" href="#Popover_1">
+					<span class="mui-icon mui-icon-map"></span>
+					<span class="mui-tab-label">篩選</span>
+				</a>
+				<a id="planning" class="mui-tab-item">
+					<span class="mui-icon mui-icon-gear"></span>
+					<span class="mui-tab-label">關於</span>
+				</a>
+			</nav>
+			<div id="Popover_1" class="mui-popover mui-bar-popover">
+				<div class="mui-popover-arrow"></div>
+				<form class="mui-input-group">
+					<div class="mui-input-row mui-checkbox">
+						<label>景點</label>
+						<input name="checkbox1" value="VIEW" type="checkbox">
+					</div>
+					<div class="mui-input-row mui-checkbox">
+						<label>美食</label>
+						<input name="checkbox1" value="FOOD" type="checkbox">
+					</div>
+					<div class="mui-input-row mui-checkbox">
+						<label>捷運</label>
+						<input name="checkbox1" value="MRT" type="checkbox">
+					</div>
+					<div class="mui-input-row mui-checkbox">
+						<label>公車</label>
+						<input name="checkbox1" value="BUS" type="checkbox">
+					</div>
+					<div class="mui-input-row mui-checkbox">
+						<label>YouBike</label>
+						<input name="checkbox1" value="UBIKE" type="checkbox">
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<script src="js/mui.min.js"></script>
+		<script type="text/javascript" src="js/index.js"></script>
+		<script>
+			var curLatLng = null,
+				wid = null,
+				currentMRT = null,
+				dstMRT = null;
+
+			function initMap() {
+				setMyLocation();
+				//document.addEventListener('plusready', onPlusReady, false);
+				var curLatLng = new google.maps.LatLng(p.coords.latitude, p.coords.longitude);
+				var dstLatLng = new google.maps.LatLng(getUrlGET()[0], getUrlGET()[1]);
+				getMRTAndMe(curLatLng, dstLatLng);
+			}
+			document.getElementById('planning').addEventListener('tap', function() {
+				location.href = 'planning.html';
+			});
+
+			function onPlusReady() {
+				if (location.search != '') {
+					wid = plus.geolocation.watchPosition(function(p) {
+						plus.geolocation.clearWatch(wid);
+					}, function(e) {
+						alert("Geolocation error: " + e.message);
+					});
+				}
+			}
+
+			function getUrlGET() {
+				var strUrl = location.search;
+				var getPara, latlng;
+				var aryPara = [];
+				if (strUrl.indexOf("?") != -1) {
+					var getSearch = strUrl.split("?");
+					getPara = getSearch[1].split("&");
+					latlng = [getPara[0].split('=')[1], getPara[1].split('=')[1]];
+				}
+				return latlng;
+			}
+
+			function getMRTAndMe(curLatLng, dstlatlng) {
+				let xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function() {
+					if (xhttp.readyState == 4 && xhttp.status == 200) {
+						console.log('response');
+						let resonse = xhttp.responseText;
+						let json = mrtXYResponseHandle(xhttp);
+						for (let i = 0; i < json.length; i++) {
+							let results = json[i];
+							results.latlng = new google.maps.LatLng(results['緯度'], results['經度']);
+							results.distance = distHaversine(results.latlng, curLatLng);
+						}
+						json.sort(function(a, b) {
+							if (a.distance == b.distance) return 0;
+							return (a.distance > b.distance) ? 1 : -1;
+						});
+						currentMRT = json[0]['緯度'] + ', ' + json[1]['經度'];
+						resonse = xhttp.responseText;
+						json = mrtXYResponseHandle(xhttp);
+						for (let i = 0; i < json.length; i++) {
+							let results = json[i];
+							results.latlng = new google.maps.LatLng(results['緯度'], results['經度']);
+							results.distance = distHaversine(results.latlng, dstlatlng);
+						}
+						json.sort(function(a, b) {
+							if (a.distance == b.distance) return 0;
+							return (a.distance > b.distance) ? 1 : -1;
+						});
+						dstMRT = json[0]['緯度'] + ', ' + json[1]['經度'];
+					}
+					console.log(xhttp.readyState);
+				}
+				xhttp.open('POST', 'http://rags0830.ddns.net:3000/MRT_xy', true);
+				xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoed');
+				xhttp.send('');
+				console.log('send');
+			}
+
+			function distHaversine(p1, p2) { //計算兩點距離
+				var rad = function(x) {
+					return x * Math.PI / 180;
+				}
+				var R = 6371; // earth's mean radius in km
+				var dLat = rad(p2.lat() - p1.lat());
+				var dLong = rad(p2.lng() - p1.lng());
+				var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(rad(p1.lat())) * Math.cos(rad(p2.lat())) * Math.sin(dLong / 2) * Math.sin(dLong / 2);
+				var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+				var d = R * c;
+				return parseFloat(d.toFixed(3));
+			}
+		</script>
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9SnJ_hvgfqaaUsnYXrSkCAaw06q1Nj3A&callback=initMap" async defer></script>
+	</body>
+
+</html>

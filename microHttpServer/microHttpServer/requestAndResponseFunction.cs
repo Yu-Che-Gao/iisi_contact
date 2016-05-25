@@ -77,6 +77,17 @@ namespace microHttpServer
             };
         }
 
+        public static responseObject listBusStop(requestObject req) //列出所有公車站牌位置
+        {
+            StringBuilder sb = new StringBuilder();
+            String content = getBusStop();
+            sb.Append(content);
+            return new responseObject()
+            {
+                Data = Encoding.UTF8.GetBytes(sb.ToString())
+            };
+        }
+
         private static String getMyDirectory() //取得本地路徑
         {
             String dir = System.Environment.CurrentDirectory;
@@ -107,6 +118,13 @@ namespace microHttpServer
             String path = getMyDirectory() + "\\bus_json";
             String allBusTime = System.IO.File.ReadAllText(path + "\\bus_time.json");
             return allBusTime;
+        }
+
+        private static String getBusStop() //取得公車站牌資訊
+        {
+            String path = getMyDirectory() + "\\bus_stop_json";
+            String allBusStopInfo = System.IO.File.ReadAllText(path + "\\bus_stop.json");
+            return allBusStopInfo;
         }
 
         private static string file_get_contents(string fileName) //發送get取得網頁內容

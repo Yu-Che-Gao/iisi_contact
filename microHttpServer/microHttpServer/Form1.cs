@@ -27,6 +27,9 @@ namespace microHttpServer
             Thread downloadBusJsonThread = new Thread(new ThreadStart(downloadBusAndUnzip.downloadAndUnzip));
             downloadBusJsonThread.Start();
 
+            Thread downloadBusStopJsonThread = new Thread(new ThreadStart(downloadBusStop.downloadAndUnZip));
+            downloadBusStopJsonThread.Start();
+
             kernal myKernal = new kernal(3000,
             (req) =>
             {
@@ -42,6 +45,8 @@ namespace microHttpServer
                     return requestAndResponseFunction.listMRTxy(req);
                 else if (req.Url == "/Bus_time") //台北公車預估到站時間
                     return requestAndResponseFunction.listBus(req);
+                else if (req.Url == "/Bus_xy") //台北公車站牌位置
+                    return requestAndResponseFunction.listBusStop(req);
                 else
                     return new responseObject()
                     {

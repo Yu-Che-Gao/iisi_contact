@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<script src="js/mui.min.js"></script>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<script type="text/javascript" charset="UTF-8">
+			mui.init();
+		</script>
+	</head>
+	<style>
+		.mui-btn {
+			display: block;
+			width: 120px;
+			margin: 10px auto;
+		}
+		
+		#info {
+			padding: 20px 10px;
+		}
+	</style>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">意見回饋</h1>
+		</header>
+		<!-- 中間區塊 middle -->
+		<div class="mui-content">
+			<!-- Main content -->
+			<div id="main">
+				<br>
+				<!--<form id="repassword" name="repassword" method="post" enctype="multipart/form-data" action="http://rags0830.ddns.net/zhack/send.php">-->
+				<table class="register_table" align="center">
+					<tr>
+						<th colspan="2" style="text-align:center; font-weight:normal; color:#A500CC;">
+							您的寶貴意見是我們進步的動力!
+						</th>
+					</tr>
+					<tr>
+						<th><label>Email</label></th>
+						<td><input type="text" id="email" placeholder="請輸入E-mail"></td>
+					</tr>
+
+					<tr>
+						<th>意見</th>
+						<td><textarea id="msg" rows="5" cols="18" placeholder="請輸入意見"></textarea></td>
+					</tr>
+
+				</table>
+				<div style="margin-bottom:50px;" align="center">
+					<button id='alertBtn' type="button" class="mui-btn mui-btn-blue mui-btn-outlined">確認送出</button>
+				</div>
+				<!--</form>-->
+
+			</div>
+		</div>
+
+	</body>
+	<script type="text/javascript" charset="utf-8">
+		var info = document.getElementById("info");
+		document.getElementById("alertBtn").addEventListener('tap', function() {
+			var email = document.getElementById("email").value;
+			var msg = document.getElementById("msg").value;
+			if (email != '' || msg != '') {
+				mui.alert('謝謝您的意見', '送出', function() {
+					var xhttp = new XMLHttpRequest();
+					xhttp.onreadystatechange = function() {
+						if (xhttp.readyState == 4 && xhttp.status == 200) {
+							var g = xhttp.responseText;
+							if (g.lastIndexOf("success")!=-1) {
+								console.log(g);
+								window.location.href = 'index.html';
+							} else if (g.lastIndexOf("error")!=-1) {
+								console.log(g);
+								mui.alert('傳送失敗', '錯誤訊息', function() {});
+							}
+						}
+					};
+					xhttp.open('POST', 'http://rags0830.ddns.net/zhack/send.php', true);
+					xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+					xhttp.send("email=" + email + "&msg=" + msg);
+				});
+			} else {
+				mui.alert('填寫未完全', '錯誤訊息', function() {});
+			}
+		});
+	</script>
+
+</html>

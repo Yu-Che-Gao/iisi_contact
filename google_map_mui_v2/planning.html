@@ -1,0 +1,104 @@
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>Hello MUI</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css">
+		<style>
+			h5 {
+				margin: 5px 7px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" onclick="location.href='index.html'"></a>
+			<h1 class="mui-title">附近地點</h1>
+		</header>
+		<div class="mui-content">
+			<ul id="positionData" class="mui-table-view mui-table-view-chevron"></ul>
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script>
+			var jsonArray = [];
+			var myCoord = [];
+
+			function initMap() {
+				document.addEventListener("plusready", onPlusReady, false);
+			}
+			var wid = null;
+
+			function onPlusReady() {
+				document.getElementById('positionData').innerHTML=plus.storage.getItem('planning_data');
+				wid = plus.geolocation.watchPosition(function(p) {
+					var curLatLng = new google.maps.LatLng(p.coords.latitude, p.coords.longitude);
+					getViewPosition(curLatLng);
+				}, function(e) {
+					alert("Geolocation error: " + e.message);
+				});
+			}
+
+			function getViewPosition(curLatLng) {
+				let xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function() {
+					if (xhttp.readyState == 4 && xhttp.status == 200) {
+						let response = xhttp.responseText;
+						let json = viewResponseHandle(response);
+						for (let i = 0; i < json.result.results.length; i++) {
+							let results = json.result.results[i];
+							results.latlng = new google.maps.LatLng(results.latitude, results.longitude);
+							results.distance = distHaversine(results.latlng, curLatLng);
+						}
+						json.result.results.sort(function(a, b) {
+							if (a.distance == b.distance) return 0;
+							return (a.distance > b.distance) ? 1 : -1;
+						});
+
+						let positionData = document.getElementById('positionData');
+						let temp='';
+						document.getElementById('positionData').innerHTML='';
+						for (let i = 0; i < json.result.results.length; i++) {
+							if (json.result.results[i].distance < 8) {
+								let li = document.createElement('li');
+								li.className = 'mui-table-view-cell';
+								temp+='<li class="mui-table-view-cell"><a class="mui-navigate-right" onclick="location.href=' + "'" + 'index.html?lat=' + json.result.results[i].latitude + '&lng=' + json.result.results[i].longitude + "'" + '">' + json.result.results[i].stitle + '</a></li>';
+								li.innerHTML = '<a class="mui-navigate-right" onclick="location.href=' + "'" + 'index.html?lat=' + json.result.results[i].latitude + '&lng=' + json.result.results[i].longitude + "'" + '">' + json.result.results[i].stitle + '</a>';
+								positionData.appendChild(li);
+							}
+						}
+						plus.storage.setItem('planning_data', temp);
+					}
+				}
+				xhttp.open('POST', 'http://rags0830.ddns.net:3000/view', true);
+				xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoed');
+				xhttp.send('');
+				plus.geolocation.clearWatch(wid);
+			}
+
+			function viewResponseHandle(response) {
+				let json = JSON.parse(response);
+				return json;
+			}
+
+			function distHaversine(p1, p2) { //計算兩點距離
+				var rad = function(x) {
+					return x * Math.PI / 180;
+				}
+				var R = 6371; // earth's mean radius in km
+				var dLat = rad(p2.lat() - p1.lat());
+				var dLong = rad(p2.lng() - p1.lng());
+				var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(rad(p1.lat())) * Math.cos(rad(p2.lat())) * Math.sin(dLong / 2) * Math.sin(dLong / 2);
+				var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+				var d = R * c;
+				return parseFloat(d.toFixed(3));
+			}
+		</script>
+
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9SnJ_hvgfqaaUsnYXrSkCAaw06q1Nj3A&callback=initMap" async defer></script>
+	</body>
+
+</html>

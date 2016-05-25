@@ -1,0 +1,183 @@
+<html>
+
+	<head>
+		<title>Simple Map</title>
+		<meta name="viewport" content="initial-scale=1.0">
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="css/mui.min.css">
+		<style>
+			html,
+			body {
+				height: 100%;
+				margin: 0;
+				padding: 0;
+			}
+			
+			#map {
+				height: 100%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<img class="mui-btn mui-btn-blue mui-btn-link mui-pull-left" src="images/Globe-40.png" />
+			<h1 class="mui-title" style="font-family:'times new roman';">Travel</h1>
+			<a class="mui-btn mui-btn-blue mui-btn-link mui-pull-right" href="send.html">回饋</a>
+		</header>
+		<div id="map"></div>
+		<nav class="mui-bar mui-bar-tab">
+			<a id="defaultTab" class="mui-tab-item mui-active" href="#">
+				<span class="mui-icon mui-icon-location"></span>
+				<span class="mui-tab-label">你在哪</span>
+			</a>
+			<a class="mui-tab-item" href="#Popover_1">
+				<span class="mui-icon mui-icon-map"></span>
+				<span class="mui-tab-label">篩選</span>
+			</a>
+			<a id="planning" class="mui-tab-item">
+				<span class="mui-icon mui-icon-list"></span>
+				<span class="mui-tab-label">旅行規劃</span>
+			</a>
+		</nav>
+		<div id="Popover_1" class="mui-popover mui-bar-popover">
+			<div class="mui-popover-arrow"></div>
+			<form class="mui-input-group">
+				<div class="mui-input-row mui-checkbox">
+					<label>景點</label>
+					<input id="VIEW" name="checkbox1" value="VIEW" type="checkbox">
+				</div>
+				<div class="mui-input-row mui-checkbox">
+					<label>美食</label>
+					<input id="FOOD" name="checkbox1" value="FOOD" type="checkbox">
+				</div>
+				<div class="mui-input-row mui-checkbox">
+					<label>捷運</label>
+					<input id="MRT" name="checkbox1" value="MRT" type="checkbox">
+				</div>
+				<div class="mui-input-row mui-checkbox">
+					<label>公車</label>
+					<input id="BUS" name="checkbox1" value="BUS" type="checkbox">
+				</div>
+				<div class="mui-input-row mui-checkbox">
+					<label>YouBike</label>
+					<input id="UBIKE" name="checkbox1" value="UBIKE" type="checkbox">
+				</div>
+				<br>
+				<div id="refresh"><button class="mui-btn mui-btn-primary mui-pull-right  " type="button" onclick=""><span class="mui-icon mui-icon-refresh"></span></button>
+				</div>
+			</form>
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script type="text/javascript" src="js/index.js"></script>
+		<script>
+			var curLatLng = null,
+				wid = null,
+				currentMRT = [],
+				dstMRT = [],
+				myPosition = null;
+			var map = null;
+
+			function initMap() {
+				var a = 0,
+					b = 0,
+					c = 0,
+					d = 0,
+					e = 0;
+				//				mui('#defaultTab').on('tap', 'a',
+				//					function() {
+				//						setMyLocation(a, b, c, d, e);
+				//					});
+				mui('#refresh').on('tap', 'button', function() {
+					var valueView = document.getElementById("VIEW").checked;
+					var valueFood = document.getElementById("FOOD").checked;
+					var valueMRT = document.getElementById("MRT").checked;
+					var valueBus = document.getElementById("BUS").checked;
+					var valueUbike = document.getElementById("UBIKE").checked;
+					if (valueView == true) {
+						a = 1;
+					} else {
+						a = 0;
+					}
+					if (valueFood == true) {
+						b = 1;
+					} else {
+						b = 0;
+					}
+					if (valueMRT == true) {
+						c = 1;
+					} else {
+						c = 0;
+					}
+					if (valueBus == true) {
+						d = 1;
+					} else {
+						d = 0;
+					}
+					if (valueUbike == true) {
+						e = 1;
+					} else {
+						e = 0;
+					}
+					setMyLocation(a, b, c, d, e);
+				});
+				setMyLocation(a, b, c, d, e);
+			}
+			document.getElementById('planning').addEventListener('tap', function() {
+				location.href = 'planning.html';
+			});
+
+			function getMRTAndMe(curLatLng, dstlatlng, map, myPosition, image) {
+				let xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function() {
+					if (xhttp.readyState == 4 && xhttp.status == 200) {
+						console.log('response');
+						let resonse = xhttp.responseText;
+						let json = mrtXYResponseHandle(xhttp);
+						for (let i = 0; i < json.length; i++) {
+							let results = json[i];
+							results.latlng = new google.maps.LatLng(results['緯度'], results['經度']);
+							results.distance = distHaversine(results.latlng, curLatLng);
+						}
+						json.sort(function(a, b) {
+							if (a.distance == b.distance) return 0;
+							return (a.distance > b.distance) ? 1 : -1;
+						});
+						currentMRT[0] = json[i]['緯度'];
+						currentMRT[1] = json[i]['經度'];
+						resonse = xhttp.responseText;
+						json = mrtXYResponseHandle(xhttp);
+						for (let i = 0; i < json.length; i++) {
+							let results = json[i];
+							results.latlng = new google.maps.LatLng(results['緯度'], results['經度']);
+							results.distance = distHaversine(results.latlng, dstlatlng);
+						}
+						json.sort(function(a, b) {
+							if (a.distance == b.distance) return 0;
+							return (a.distance > b.distance) ? 1 : -1;
+						});
+						dstMRT[0] = json[i]['緯度'];
+						dstMRT[1] = json[i]['經度'];
+						myPosition.push({
+							lat: parseFloat(currentMRT[0]),
+							lng: parseFloat(currentMRT[1])
+						});
+						myPosition.push({
+							lat: parseFloat(dstMRT[0]),
+							lng: parseFloat(dstMRT[1])
+						});
+						myMarker(map, myPosition, image);
+					}
+				}
+				xhttp.open('POST', 'http://rags0830.ddns.net:3000/MRT_xy', true);
+				xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoed');
+				xhttp.send('');
+				console.log('send');
+			}
+			//
+			
+		</script>
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9SnJ_hvgfqaaUsnYXrSkCAaw06q1Nj3A&callback=initMap" async defer></script>
+	</body>
+
+</html>
